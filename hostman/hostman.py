@@ -93,7 +93,12 @@ def remove(address=None, names=None, partial=False, path=None):
         hosts = Hosts()
     output_message(hosts.remove(address=address, names=names))
 
-
+def format_entry(value):
+    if isinstance(value, list):
+        entry_string = ' '.join(value)
+        return entry_string.strip()
+    if isinstance(value, str):
+        return value.strip()
 
 if __name__ == '__main__':
     arguments = docopt(__doc__, version='0.1.0')
@@ -105,6 +110,10 @@ if __name__ == '__main__':
     address = arguments.get('--address')
     names = arguments.get('--names')
     input_file = arguments.get('--input-file')
+
+    new_entry = None
+    if entry:
+        new_entry = format_entry(entry)
 
     if not path:
         if sys.platform.startswith('win'):
@@ -118,8 +127,8 @@ if __name__ == '__main__':
 
     if utils.is_writeable(path):
         if arguments.get('add'):
-            if entry:
-                add(entry=entry, path=path, force=force)
+            if new_entry:
+                add(entry=new_entry, path=path, force=force)
             if input_file:
                 add_file(input_file)
 
@@ -127,7 +136,4 @@ if __name__ == '__main__':
             remove(address=address, names=names, path=path)
     else:
         print "Cannot open path: {}\nCheck you have the necessary permissions.".format(path)
-
-
-  #hostman -r address=2607:f0d0:1002:51::4 names=myhost.com,myhost
 
