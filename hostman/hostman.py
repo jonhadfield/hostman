@@ -29,14 +29,19 @@ Options:
 from docopt import docopt
 from hosts import Hosts, HostsEntry, utils
 import sys
-import time
+import datetime
 import shutil
 
 
-def backup_hosts(source=None):
-    epoch_time = int(time.time())
+def backup_hosts(source=None, extension=None):
+    if not extension:
+        ext = datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d%H%M%S')
+    else:
+        ext=extension
     dest_split = source.split('/')
-    new_filename = ".{0}.{1}".format(dest_split[-1], epoch_time)
+    print dest_split
+    print "destsplit = {}".format(dest_split[-1])
+    new_filename = ".{0}.{1}".format(dest_split[-1], ext)
     dest_split[-1] = new_filename
     dest = "/".join(dest_split)
     print dest
@@ -44,8 +49,10 @@ def backup_hosts(source=None):
         shutil.copy(source, dest)
     except shutil.Error as e:
         print('Error: %s' % e)
+        raise
     except IOError as e:
         print('Error: %s' % e.strerror)
+        raise
 
 def output_message(message=None):
     if isinstance(message, dict):
@@ -72,7 +79,14 @@ def add(entry=None, path=None, force=False, input_file=None):
                 hosts.add(line)
     output_message(hosts.add(entry, force=force))
 
-def add_file(input_file=None):
+def import_from_file(input_url=None):
+    if path:
+        hosts = Hosts(path)
+    else:
+        hosts = Hosts()
+    output_message(hosts.import_url(input_url))
+
+def import_from_url(input_file=None):
     if path:
         hosts = Hosts(path)
     else:
@@ -110,6 +124,7 @@ if __name__ == '__main__':
     address = arguments.get('--address')
     names = arguments.get('--names')
     input_file = arguments.get('--input-file')
+    input_url = arguments.get('--input-url')
 
     new_entry = None
     if entry:
@@ -130,7 +145,9 @@ if __name__ == '__main__':
             if new_entry:
                 add(entry=new_entry, path=path, force=force)
             if input_file:
-                add_file(input_file)
+                import_from_file(input_file)
+            if input_url:
+                import_form_url(input_url)
 
         if arguments.get('remove'):
             remove(address=address, names=names, path=path)
