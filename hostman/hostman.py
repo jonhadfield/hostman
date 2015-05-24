@@ -47,19 +47,17 @@ def backup_hosts(source=None, extension=None):
     print dest
     try:
         shutil.copy(source, dest)
-    except shutil.Error as e:
-        print('Error: %s' % e)
-        raise
-    except IOError as e:
-        print('Error: %s' % e.strerror)
+    except:
         raise
 
 def output_message(message=None):
     if isinstance(message, dict):
         print("result: {0}".format(message.get('result')))
         print("message: {0}".format(message.get('message')))
+        return True
     else:
         print("Failed to output message")
+        return False
 
 def add(entry=None, path=None, force=False, input_file=None):
     """
@@ -69,29 +67,21 @@ def add(entry=None, path=None, force=False, input_file=None):
     :param force: Remove all matching entries before adding
     :return:
     """
-    if path:
-        hosts = Hosts(path)
-    else:
-        hosts = Hosts()
+
+    hosts = Hosts(path)
     if input_file and utils.is_readable(input_file):
         with open(input_file, 'r') as infile:
             for line in iter(infile.readline, ''):
                 hosts.add(line)
     output_message(hosts.add(entry, force=force))
 
-def import_from_file(input_url=None):
-    if path:
-        hosts = Hosts(path)
-    else:
-        hosts = Hosts()
-    output_message(hosts.import_url(input_url))
+def import_from_file(hosts_path=None, file_path=None):
+    hosts = Hosts(hosts_path)
+    output_message(hosts.import_file(file_path))
 
-def import_from_url(input_file=None):
-    if path:
-        hosts = Hosts(path)
-    else:
-        hosts = Hosts()
-    output_message(hosts.import_file(input_file))
+def import_from_url(file_path, url=None):
+    hosts = Hosts(file_path)
+    output_message(hosts.import_url(url))
 
 def remove(address=None, names=None, partial=False, path=None):
     """

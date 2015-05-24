@@ -23,7 +23,7 @@ def test_add_single_ipv4_host(tmpdir):
 
 def test_backup_hosts_file(tmpdir):
     """
-    Test the addition of an ipv4 host succeeds
+    Test hosts file backup
     """
     hosts_file = tmpdir.mkdir("etc").join("hosts")
     hosts_file.write("127.0.0.1\tlocalhost\n")
@@ -38,9 +38,25 @@ def test_backup_hosts_file(tmpdir):
 
 def test_backup_hosts_file_fails_with_invalid_source(tmpdir):
     """
-    Test the addition of an ipv4 host succeeds
+    Test backup succeeds with valid source and fails with non-existant source
     """
     hosts_file = tmpdir.mkdir("etc").join("hosts")
     hosts_file.write("127.0.0.1\tlocalhost\n")
     with pytest.raises(Exception):
         hostman.backup_hosts(source="invalid")
+
+def test_output_message_fails_without_dict():
+    assert hostman.output_message(message={'result': 'success', 'message:': 'succeeded'})
+    assert not hostman.output_message(message='success')
+
+def test_import_hosts_from_file(tmpdir):
+    """
+    Test the import of a file
+    """
+    hosts_file = tmpdir.mkdir("etc").join("hosts")
+    hosts_file.write("127.0.0.1\tlocalhost\n")
+    import_file = tmpdir.mkdir("tmp").join("in")
+    import_file.write("8.8.8.8\tgoogledns\n")
+    hostman.import_from_file(hosts_path=hosts_file.strpath, file_path=import_file.strpath)
+    hosts = Hosts(path=hosts_file.strpath)
+    assert hosts.count('8.8.8.8 googledns').get('address_matches') == 1
