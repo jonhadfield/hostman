@@ -69,18 +69,14 @@ def add(entry=None, path=None, force=False, input_file=None):
     """
 
     hosts = Hosts(path)
-    if input_file and utils.is_readable(input_file):
-        with open(input_file, 'r') as infile:
-            for line in iter(infile.readline, ''):
-                hosts.add(line)
     output_message(hosts.add(entry, force=force))
 
 def import_from_file(hosts_path=None, file_path=None):
     hosts = Hosts(hosts_path)
     output_message(hosts.import_file(file_path))
 
-def import_from_url(file_path, url=None):
-    hosts = Hosts(file_path)
+def import_from_url(hosts_path=None, url=None):
+    hosts = Hosts(hosts_path)
     output_message(hosts.import_url(url))
 
 def remove(address=None, names=None, partial=False, path=None):

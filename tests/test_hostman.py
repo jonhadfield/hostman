@@ -60,3 +60,14 @@ def test_import_hosts_from_file(tmpdir):
     hostman.import_from_file(hosts_path=hosts_file.strpath, file_path=import_file.strpath)
     hosts = Hosts(path=hosts_file.strpath)
     assert hosts.count('8.8.8.8 googledns').get('address_matches') == 1
+
+def test_import_hosts_from_url(tmpdir):
+    """
+    Test the import of a url
+    """
+    hosts_file = tmpdir.mkdir("etc").join("hosts")
+    hosts_file.write("127.0.0.1\tlocalhost\n")
+    import_url = "https://dl.dropboxusercontent.com/u/167103/hosts"
+    hostman.import_from_url(hosts_path=hosts_file.strpath, url=import_url)
+    hosts = Hosts(path=hosts_file.strpath)
+    assert hosts.count('66.66.66.66 example.com example').get('name_matches') == 1
