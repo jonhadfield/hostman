@@ -71,3 +71,32 @@ def test_import_hosts_from_url(tmpdir):
     hostman.import_from_url(hosts_path=hosts_file.strpath, url=import_url)
     hosts = Hosts(path=hosts_file.strpath)
     assert hosts.count('66.66.66.66 example.com example').get('name_matches') == 1
+
+def test_removal_of_entry(tmpdir):
+    hosts_file = tmpdir.mkdir("etc").join("hosts")
+    hosts_file.write("15.15.15.15\texample.com\n16.16.16.16\ttest.com\n")
+    hosts = Hosts(path=hosts_file.strpath)
+    #result = hosts.remove(address='15.15.15.15')
+    result = hostman.remove(address='15.15.15.15', path=hosts_file.strpath)
+    hosts = Hosts(path=hosts_file.strpath)
+    assert hosts.count('15.15.15.15 example.com').get('name_matches') == 0
+    assert hosts.count('16.16.16.16 test.com').get('name_matches') == 1
+
+    #print result
+    #print result.__class__.__name__
+    #assert 'Removed 1 entries' in result.get('message')
+    #assert 'success' == result.get('result')
+
+
+#def test_import_hosts_from_url_counters(tmpdir):
+#    """
+#    Test the import of a url
+#    """
+#    hosts_file = tmpdir.mkdir("etc").join("hosts")
+#    hosts_file.write("127.0.0.1\tlocalhost\n")
+#    import_url = "https://dl.dropboxusercontent.com/u/167103/hosts"
+#    result = hostman.import_from_url(hosts_path=hosts_file.strpath, url=import_url)
+#    print result
+#    #hosts = Hosts(path=hosts_file.strpath)
+#    #assert hosts.count('66.66.66.66 example.com example').get('name_matches') == 1
+#    assert 0

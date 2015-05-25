@@ -50,6 +50,7 @@ def backup_hosts(source=None, extension=None):
     except:
         raise
 
+
 def output_message(message=None):
     if isinstance(message, dict):
         print("result: {0}".format(message.get('result')))
@@ -59,7 +60,8 @@ def output_message(message=None):
         print("Failed to output message")
         return False
 
-def add(entry=None, path=None, force=False, input_file=None):
+
+def add(entry=None, path=None, force=False):
     """
     Add the specified entry
     :param entry: The entry to add
@@ -67,38 +69,44 @@ def add(entry=None, path=None, force=False, input_file=None):
     :param force: Remove all matching entries before adding
     :return:
     """
-
     hosts = Hosts(path)
     output_message(hosts.add(entry, force=force))
+
 
 def import_from_file(hosts_path=None, file_path=None):
     hosts = Hosts(hosts_path)
     output_message(hosts.import_file(file_path))
 
+
 def import_from_url(hosts_path=None, url=None):
     hosts = Hosts(hosts_path)
     output_message(hosts.import_url(url))
 
+
 def remove(address=None, names=None, partial=False, path=None):
     """
-    Remove entries matching
-    :param entry: The entry to add
-    :param path: The path of the hosts file
-    :param force: Remove all matching entries before adding
+    Remove entries matching address and/or names
+    :param address: The address of the entry to remove
+    :param names: The path of the hosts file
+    :param partial: Remove entry where 'any' parameter matches
+    :param path: Override default hosts file path
     :return:
     """
-    if path:
-        hosts = Hosts(path)
-    else:
-        hosts = Hosts()
+    hosts = Hosts(path)
     output_message(hosts.remove(address=address, names=names))
 
-def format_entry(value):
-    if isinstance(value, list):
-        entry_string = ' '.join(value)
+
+def strip_entry_value(entry_value):
+    """
+    :param entry_value: value to strip spaces from
+    :return: value minus the leading and trailing spaces
+    """
+    if isinstance(entry_value, list):
+        entry_string = ' '.join(entry_value)
         return entry_string.strip()
-    if isinstance(value, str):
-        return value.strip()
+    if isinstance(entry_value, str):
+        return entry_value.strip()
+
 
 if __name__ == '__main__':
     arguments = docopt(__doc__, version='0.1.0')
@@ -114,7 +122,7 @@ if __name__ == '__main__':
 
     new_entry = None
     if entry:
-        new_entry = format_entry(entry)
+        new_entry = strip_entry_value(entry)
 
     if not path:
         if sys.platform.startswith('win'):
@@ -133,10 +141,9 @@ if __name__ == '__main__':
             if input_file:
                 import_from_file(input_file)
             if input_url:
-                import_form_url(input_url)
+                import_from_url(input_url)
 
         if arguments.get('remove'):
             remove(address=address, names=names, path=path)
     else:
         print "Cannot open path: {}\nCheck you have the necessary permissions.".format(path)
-
