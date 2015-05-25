@@ -102,8 +102,10 @@ def strip_entry_value(entry_value):
     :return: value minus the leading and trailing spaces
     """
     if isinstance(entry_value, list):
-        entry_string = ' '.join(entry_value)
-        return entry_string.strip()
+        new_list = []
+        for entry in entry_value:
+            new_list.append(entry.strip())
+        return ' '.join(new_list)
     if isinstance(entry_value, str):
         return entry_value.strip()
 
@@ -141,7 +143,7 @@ if __name__ == '__main__':
             if input_file:
                 import_from_file(input_file)
             if input_url:
-                import_from_url(input_url)
+                import_from_url(hosts_path=path, url=input_url)
 
         if arguments.get('remove'):
             remove(address=address, names=names, path=path)
