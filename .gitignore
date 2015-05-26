@@ -1,5 +1,5 @@
 *.py[cod]
-.idea/
+*.iml
 # C extensions
 *.so
 .eggs

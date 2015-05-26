@@ -39,12 +39,9 @@ def backup_hosts(source=None, extension=None):
     else:
         ext=extension
     dest_split = source.split('/')
-    print dest_split
-    print "destsplit = {}".format(dest_split[-1])
     new_filename = ".{0}.{1}".format(dest_split[-1], ext)
     dest_split[-1] = new_filename
     dest = "/".join(dest_split)
-    print dest
     try:
         shutil.copy(source, dest)
     except:
