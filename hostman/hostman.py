@@ -27,7 +27,7 @@ Options:
   -v --verbose                 print verbose output
 """
 from docopt import docopt
-from hosts import Hosts, utils
+from hosts import Hosts, utils, HostsEntry
 import sys
 import datetime
 import shutil
@@ -37,7 +37,7 @@ def backup_hosts(source=None, extension=None):
     if not extension:
         ext = datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d%H%M%S')
     else:
-        ext=extension
+        ext = extension
     dest_split = source.split('/')
     new_filename = ".{0}.{1}".format(dest_split[-1], ext)
     dest_split[-1] = new_filename
@@ -46,6 +46,7 @@ def backup_hosts(source=None, extension=None):
         shutil.copy(source, dest)
     except:
         raise
+    return True
 
 
 def output_message(message=None):
@@ -66,19 +67,26 @@ def add(entry=None, path=None, force=False):
     :param force: Remove all matching entries before adding
     :return:
     """
+    hosts_entry = HostsEntry.str_to_hostentry(entry)
     hosts = Hosts(path)
-    output_message(hosts.add(entry, force=force))
-
+    hosts.add(entries=[hosts_entry], force=force)
+    hosts.write()
 
 def import_from_file(hosts_path=None, file_path=None):
-    hosts = Hosts(hosts_path)
-    output_message(hosts.import_file(file_path))
-
+    try:
+        hosts = Hosts(path=hosts_path)
+        output_message(hosts.import_file(import_file_path=file_path))
+    except:
+        raise
+    return True
 
 def import_from_url(hosts_path=None, url=None):
-    hosts = Hosts(hosts_path)
-    output_message(hosts.import_url(url))
-
+    try:
+        hosts = Hosts(path=hosts_path)
+        output_message(hosts.import_url(url=url))
+    except:
+        raise
+    return True
 
 def remove(address=None, names=None, partial=False, path=None):
     """
@@ -89,9 +97,14 @@ def remove(address=None, names=None, partial=False, path=None):
     :param path: Override default hosts file path
     :return:
     """
-    hosts = Hosts(path)
-    output_message(hosts.remove(address=address, names=names))
-
+    try:
+        hosts = Hosts(path)
+        entry_to_remove = HostsEntry.str_to_hostentry("{}\t{}".format(address, names))
+        hosts.remove_matching(entry_to_remove)
+        hosts.write()
+    except:
+        raise
+    return True
 
 def strip_entry_value(entry_value):
     """
@@ -138,7 +151,7 @@ if __name__ == '__main__':
             if new_entry:
                 add(entry=new_entry, path=path, force=force)
             if input_file:
-                import_from_file(input_file)
+                import_from_file(file_path=input_file)
             if input_url:
                 import_from_url(hosts_path=path, url=input_url)
 
