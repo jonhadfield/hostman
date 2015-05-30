@@ -13,14 +13,14 @@ Usage:
 Options:
   -h --help                    show this help message and exit
   --version                    show version and exit
-  -f --force                   first remove all existing entries that match
+  -f --force                   replace matching entries
   --address=ADDRESS            ipv6 or ipv4 address
   --names=NAMES                host names
   -q --quiet                   report only failures
   -p --path=PATH               location of hosts file (attempts to detect default)
   -i --input-file=FILE         file containing hosts to import
   -u --input-url=URL           url of file containing hosts to import
-  -b --backup                  create a backup before each change
+  -b --backup                  create a backup before writing any changes
   --exclude=VALUE              comma separated list of names or addresses
                                to exclude from operation [default: 127.0.0.1]
   -c --count                   count entries added, replaced and removed
@@ -29,6 +29,7 @@ Options:
 from docopt import docopt
 from hosts import Hosts, utils, HostsEntry
 import sys
+import os
 import datetime
 import shutil
 
@@ -44,49 +45,68 @@ def backup_hosts(source=None, extension=None):
     dest = "/".join(dest_split)
     try:
         shutil.copy(source, dest)
-    except:
-        raise
-    return True
-
+        return {'result': 'success', 'message': 'Backup written to: {}'.format(dest)}
+    except IOError:
+        return {'result': 'failed', 'message': 'Cannot create backup file: {}'.format(dest)}
 
 def output_message(message=None):
-    if isinstance(message, dict):
-        print("result: {0}".format(message.get('result')))
-        print("message: {0}".format(message.get('message')))
+    res = message.get('result')
+    msg = message.get('message')
+    if res == 'succeeded':
+        sys.exit(0)
+    elif res == 'failed':
+        sys.exit(1)
+    elif res == 'continue':
         return True
-    else:
-        print("Failed to output message")
-        return False
 
-
-def add(entry=None, path=None, force=False):
+def add(entry_line=None, hosts_path=None, force_add=False):
     """
     Add the specified entry
-    :param entry: The entry to add
-    :param path: The path of the hosts file
-    :param force: Remove all matching entries before adding
+    :param entry_line: The entry to add
+    :param hosts_path: The path of the hosts file
+    :param force_add: Replace matching any matching entries with new entry
     :return:
     """
-    hosts_entry = HostsEntry.str_to_hostentry(entry)
-    hosts = Hosts(path)
-    hosts.add(entries=[hosts_entry], force=force)
-    hosts.write()
+    hosts_entry = HostsEntry.str_to_hostentry(entry_line)
+    if not hosts_entry:
+        output_message({'result': 'failed', 'message': '"{0}": is not a valid entry.'.format(entry_line)})
+
+    duplicate_entry = False
+    entry_to_add = False
+
+    hosts = Hosts(hosts_path)
+    add_result = hosts.add(entries=[hosts_entry], force=force_add)
+    if add_result.get('replaced_count'):
+        hosts.write()
+        return {'result': 'success',
+                'message': 'Entry added. Similar entries replaced.'}
+    if add_result.get('ipv4_count') or add_result.get('ipv6_count'):
+        entry_to_add = True
+    if add_result.get('duplicate_count'):
+        duplicate_entry = True
+    if entry_to_add and not duplicate_entry:
+        hosts.write()
+        return {'result': 'success',
+                'message': 'New entry added.'}
+    if not force_add and duplicate_entry:
+        return {'result': 'failed',
+                'message': 'Nothing added. New entry matches one or more existing.'
+                           '\nUse -f to replace similar entries.'}
+
+
 
 def import_from_file(hosts_path=None, file_path=None):
-    try:
+    if not os.path.exists(hosts_path):
+        return {'result': 'failed', 'message': 'Cannot read hosts file: {0}'.format(hosts_path)}
+    if not os.path.exists(file_path):
+        return {'result': 'failed', 'message': 'Cannot read import file: {0}'.format(file_path)}
+    else:
         hosts = Hosts(path=hosts_path)
-        output_message(hosts.import_file(import_file_path=file_path))
-    except:
-        raise
-    return True
+        return hosts.import_file(import_file_path=file_path)
 
 def import_from_url(hosts_path=None, url=None):
-    try:
-        hosts = Hosts(path=hosts_path)
-        output_message(hosts.import_url(url=url))
-    except:
-        raise
-    return True
+    hosts = Hosts(path=hosts_path)
+    return hosts.import_url(url=url)
 
 def remove(address=None, names=None, partial=False, path=None):
     """
@@ -97,14 +117,10 @@ def remove(address=None, names=None, partial=False, path=None):
     :param path: Override default hosts file path
     :return:
     """
-    try:
-        hosts = Hosts(path)
-        entry_to_remove = HostsEntry.str_to_hostentry("{}\t{}".format(address, names))
-        hosts.remove_matching(entry_to_remove)
-        hosts.write()
-    except:
-        raise
-    return True
+    hosts = Hosts(path)
+    entry_to_remove = HostsEntry.str_to_hostentry("{}\t{}".format(address, names))
+    remove_result = hosts.remove_matching(entry_to_remove)
+    return remove_result
 
 def strip_entry_value(entry_value):
     """
@@ -122,7 +138,6 @@ def strip_entry_value(entry_value):
 
 if __name__ == '__main__':
     arguments = docopt(__doc__, version='0.1.0')
-    print(arguments)
     entry = arguments.get('ENTRY')
     path = arguments.get('--path')
     force = arguments.get('--force')
@@ -132,30 +147,42 @@ if __name__ == '__main__':
     input_file = arguments.get('--input-file')
     input_url = arguments.get('--input-url')
 
-    new_entry = None
-    if entry:
-        new_entry = strip_entry_value(entry)
-
     if not path:
         if sys.platform.startswith('win'):
             path = r'c:\windows\system32\drivers\etc\hosts'
         else:
             path = '/etc/hosts'
 
+    if not utils.is_readable(path):
+        output_message({'result': 'failed',
+                        'message': 'Unable to read path: {0}.'.format(path)})
+
+    new_entry = None
+    if entry:
+        new_entry = strip_entry_value(entry)
+
     if backup:
-        if utils.is_readable(path):
-            backup_hosts(source=path)
+        result = backup_hosts(source=path)
+        output_message(result)
 
-    if utils.is_writeable(path):
-        if arguments.get('add'):
-            if new_entry:
-                add(entry=new_entry, path=path, force=force)
-            if input_file:
-                import_from_file(file_path=input_file)
-            if input_url:
-                import_from_url(hosts_path=path, url=input_url)
-
-        if arguments.get('remove'):
-            remove(address=address, names=names, path=path)
+    if arguments.get('add'):
+        final_message = None
+        if not utils.is_writeable(path):
+            output_message({'result': 'failed',
+                            'message': 'Unable to write to: {}'.format(path)})
+        if new_entry:
+            result = add(entry_line=new_entry, hosts_path=path, force_add=force)
+            output_message(result)
+        if input_file:
+            result = import_from_file(file_path=input_file)
+            output_message(result)
+        if input_url:
+            result = import_from_url(hosts_path=path, url=input_url)
+            output_message(result)
     else:
-        print "Cannot open path: {}\nCheck you have the necessary permissions.".format(path)
+        if arguments.get('remove'):
+            result = remove(address=address, names=names, path=path)
+            output_message(result)
+        else:
+            output_message({'result': 'failed',
+                            'message': 'Unable to write to: {}'.format(path)})
