@@ -31,13 +31,14 @@ import sys
 import os
 import datetime
 import shutil
-from colorama import Fore, Back, Style, init
+from colorama import Fore, init
 init(autoreset=True)
 
 
 def backup_hosts(source=None, extension=None):
     if not extension:
-        ext = datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d%H%M%S')
+        now = datetime.datetime.now()
+        ext = now.strftime('%Y%m%d%H%M%S')
     else:
         ext = extension
     dest_split = source.split('/')
@@ -50,6 +51,7 @@ def backup_hosts(source=None, extension=None):
     except IOError:
         return {'result': 'failed', 'message': 'Cannot create backup file: {0}'.format(dest)}
 
+
 def output_message(message=None):
     res = message.get('result')
     if res == 'success':
@@ -61,6 +63,7 @@ def output_message(message=None):
     elif res == 'continue':
         print message.get('message')
         return True
+
 
 def add(entry_line=None, hosts_path=None, force_add=False):
     """
@@ -115,6 +118,7 @@ def import_from_file(hosts_path=None, file_path=None):
     return {'result': import_file_output.get('result'),
             'message': message}
 
+
 def import_from_url(hosts_path=None, url=None):
     if hosts_path and not os.path.exists(hosts_path):
         return {'result': 'failed', 'message': 'Cannot read hosts file: {0}'.format(hosts_path)}
@@ -135,14 +139,10 @@ def import_from_url(hosts_path=None, url=None):
 def remove(address_to_remove=None, names_to_remove=None, remove_from_path=None):
     """
     Remove entries matching address and/or names
-    :param address: The address of the entry to remove
-    :param names: The path of the hosts file
-    :param partial: Remove entry where 'any' parameter matches
-    :param path: Override default hosts file path
-    :return:
     """
     hosts = Hosts(path=remove_from_path)
     remove_result = None
+    write_result = False
     if address_to_remove or names_to_remove:
         remove_result = hosts.remove_matching(address=address_to_remove, names=names_to_remove)
         write_result = hosts.write()
@@ -165,8 +165,8 @@ def strip_entry_value(entry_value):
     """
     if isinstance(entry_value, list):
         new_list = []
-        for entry in entry_value:
-            new_list.append(entry.strip())
+        for value in entry_value:
+            new_list.append(value.strip())
         return ' '.join(new_list)
     if isinstance(entry_value, str):
         return entry_value.strip()
