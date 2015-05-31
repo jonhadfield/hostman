@@ -47,24 +47,20 @@ def backup_hosts(source=None, extension=None):
     dest = "/".join(dest_split)
     try:
         shutil.copy(source, dest)
-        return {'result': 'success', 'message': 'Backup written to: {}'.format(dest)}
+        return {'result': 'success', 'message': 'Backup written to: {0}'.format(dest)}
     except IOError:
-        return {'result': 'failed', 'message': 'Cannot create backup file: {}'.format(dest)}
+        return {'result': 'failed', 'message': 'Cannot create backup file: {0}'.format(dest)}
 
 def output_message(message=None):
-    print "START OUTPUT MESSAGE"
     res = message.get('result')
     if res == 'success':
         print (Fore.GREEN + message.get('message'))
-        print "END OUTPUT MESSAGE"
         sys.exit(0)
     elif res == 'failed':
         print (Fore.RED + message.get('message'))
-        print "END OUTPUT MESSAGE"
         sys.exit(1)
     elif res == 'continue':
         print message.get('message')
-        print "END OUTPUT MESSAGE"
         return True
 
 def add(entry_line=None, hosts_path=None, force_add=False):
@@ -87,7 +83,7 @@ def add(entry_line=None, hosts_path=None, force_add=False):
     if add_result.get('replaced_count'):
         hosts.write()
         return {'result': 'success',
-                'message': 'Entry added. Similar entries replaced.'}
+                'message': 'Entry added. Matching entries replaced.'}
     if add_result.get('ipv4_count') or add_result.get('ipv6_count'):
         entry_to_add = True
     if add_result.get('duplicate_count'):
@@ -126,18 +122,19 @@ def remove(address_to_remove=None, names_to_remove=None, remove_from_path=None):
     :param path: Override default hosts file path
     :return:
     """
-    hosts = Hosts(remove_from_path)
+    hosts = Hosts(path=remove_from_path)
     remove_result = None
     if address_to_remove or names_to_remove:
-        print "address to remove: {}".format(address_to_remove)
-        print "namess to remove: {}".format(names_to_remove)
         remove_result = hosts.remove_matching(address=address_to_remove, names=names_to_remove)
-        hosts.write()
+        write_result = hosts.write()
+
+    if not write_result:
+        return {'result': 'failed', 'message': 'Unable to write to path: {0}'.format(hosts.hosts_path)}
     if remove_result:
         str_entry = "entry"
         if remove_result > 1:
             str_entry = 'entries'
-        return {'result': 'success', 'message': 'Removed {} {}.'.format(remove_result, str_entry)}
+        return {'result': 'success', 'message': 'Removed {0} {1}.'.format(remove_result, str_entry)}
     else:
         return {'result': 'failed', 'message': 'No matching entries.'.format(remove_result)}
 
@@ -189,7 +186,7 @@ if __name__ == '__main__':
         final_message = None
         if not utils.is_writeable(path):
             output_message({'result': 'failed',
-                            'message': 'Unable to write to: {}'.format(path)})
+                            'message': 'Unable to write to: {0}'.format(path)})
         if new_entry:
             result = add(entry_line=new_entry, hosts_path=path, force_add=force)
             output_message(result)
@@ -202,5 +199,4 @@ if __name__ == '__main__':
     else:
         if arguments.get('remove'):
             result = remove(address_to_remove=address, names_to_remove=names, remove_from_path=path)
-            print result
             output_message(result)
