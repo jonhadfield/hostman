@@ -32,6 +32,8 @@ import sys
 import os
 import datetime
 import shutil
+from colorama import Fore, Back, Style, init
+init(autoreset=True)
 
 
 def backup_hosts(source=None, extension=None):
@@ -50,13 +52,19 @@ def backup_hosts(source=None, extension=None):
         return {'result': 'failed', 'message': 'Cannot create backup file: {}'.format(dest)}
 
 def output_message(message=None):
+    print "START OUTPUT MESSAGE"
     res = message.get('result')
-    msg = message.get('message')
-    if res == 'succeeded':
+    if res == 'success':
+        print (Fore.GREEN + message.get('message'))
+        print "END OUTPUT MESSAGE"
         sys.exit(0)
     elif res == 'failed':
+        print (Fore.RED + message.get('message'))
+        print "END OUTPUT MESSAGE"
         sys.exit(1)
     elif res == 'continue':
+        print message.get('message')
+        print "END OUTPUT MESSAGE"
         return True
 
 def add(entry_line=None, hosts_path=None, force_add=False):
@@ -90,9 +98,8 @@ def add(entry_line=None, hosts_path=None, force_add=False):
                 'message': 'New entry added.'}
     if not force_add and duplicate_entry:
         return {'result': 'failed',
-                'message': 'Nothing added. New entry matches one or more existing.'
+                'message': 'New entry matches one or more existing.'
                            '\nUse -f to replace similar entries.'}
-
 
 
 def import_from_file(hosts_path=None, file_path=None):
@@ -104,11 +111,13 @@ def import_from_file(hosts_path=None, file_path=None):
         hosts = Hosts(path=hosts_path)
         return hosts.import_file(import_file_path=file_path)
 
+
 def import_from_url(hosts_path=None, url=None):
     hosts = Hosts(path=hosts_path)
     return hosts.import_url(url=url)
 
-def remove(address=None, names=None, partial=False, path=None):
+
+def remove(address_to_remove=None, names_to_remove=None, remove_from_path=None):
     """
     Remove entries matching address and/or names
     :param address: The address of the entry to remove
@@ -117,10 +126,21 @@ def remove(address=None, names=None, partial=False, path=None):
     :param path: Override default hosts file path
     :return:
     """
-    hosts = Hosts(path)
-    entry_to_remove = HostsEntry.str_to_hostentry("{}\t{}".format(address, names))
-    remove_result = hosts.remove_matching(entry_to_remove)
-    return remove_result
+    hosts = Hosts(remove_from_path)
+    remove_result = None
+    if address_to_remove or names_to_remove:
+        print "address to remove: {}".format(address_to_remove)
+        print "namess to remove: {}".format(names_to_remove)
+        remove_result = hosts.remove_matching(address=address_to_remove, names=names_to_remove)
+        hosts.write()
+    if remove_result:
+        str_entry = "entry"
+        if remove_result > 1:
+            str_entry = 'entries'
+        return {'result': 'success', 'message': 'Removed {} {}.'.format(remove_result, str_entry)}
+    else:
+        return {'result': 'failed', 'message': 'No matching entries.'.format(remove_result)}
+
 
 def strip_entry_value(entry_value):
     """
@@ -181,8 +201,6 @@ if __name__ == '__main__':
             output_message(result)
     else:
         if arguments.get('remove'):
-            result = remove(address=address, names=names, path=path)
+            result = remove(address_to_remove=address, names_to_remove=names, remove_from_path=path)
+            print result
             output_message(result)
-        else:
-            output_message({'result': 'failed',
-                            'message': 'Unable to write to: {}'.format(path)})

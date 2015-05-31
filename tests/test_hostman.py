@@ -53,7 +53,7 @@ def test_add_duplicate_ipv4_host_without_force(tmpdir):
     new_entry = '9.9.9.9 george bungle.com'
     output = hostman.add(entry_line=new_entry, hosts_path=hosts_file.strpath, force_add=False)
     assert output.get('result') == 'failed'
-    assert output.get('message').startswith('Nothing added.')
+    assert output.get('message').startswith('New entry matches')
 
 
 def test_add_new_ipv4_host(tmpdir):
@@ -108,7 +108,7 @@ def test_output_message_with_failure():
 
 def test_output_message_with_success():
     with pytest.raises(SystemExit) as cm:
-        hostman.output_message({'result': 'succeeded', 'message': 'test success'})
+        hostman.output_message({'result': 'success', 'message': 'test success'})
     assert cm.value.code == 0
 
 
@@ -141,7 +141,7 @@ def test_import_hosts_from_url(tmpdir):
 def test_removal_of_entry(tmpdir):
     hosts_file = tmpdir.mkdir("etc").join("hosts")
     hosts_file.write("15.15.15.15\texample.com\n16.16.16.16\ttest.com\n")
-    assert hostman.remove(address='15.15.15.15', path=hosts_file.strpath)
+    assert hostman.remove(address_to_remove='15.15.15.15', remove_from_path=hosts_file.strpath)
 
 
 def test_stripping():
