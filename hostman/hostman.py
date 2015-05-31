@@ -4,9 +4,9 @@
 """Hostman.
 
 Usage:
-  hostman add [-fqbcvq] [--force] [--path=PATH]
+  hostman add [-fqbvq] [--force] [--path=PATH]
               ( [ENTRY ...] | [--input-file=FILE] | [--input-url=URL] )
-  hostman remove [-qbcvq] ([--address=<address>] [--names=<names>]) [--path=PATH]
+  hostman remove [-qbvq] ([--address=<address>] [--names=<names>]) [--path=PATH]
                  [--input-file=FILE] [--input-url=URL]
   hostman --version
 
@@ -23,7 +23,6 @@ Options:
   -b --backup                  create a backup before writing any changes
   --exclude=VALUE              comma separated list of names or addresses
                                to exclude from operation [default: 127.0.0.1]
-  -c --count                   count entries added, replaced and removed
   -v --verbose                 print verbose output
 """
 from docopt import docopt
@@ -99,18 +98,38 @@ def add(entry_line=None, hosts_path=None, force_add=False):
 
 
 def import_from_file(hosts_path=None, file_path=None):
-    if not os.path.exists(hosts_path):
+    if hosts_path and not os.path.exists(hosts_path):
         return {'result': 'failed', 'message': 'Cannot read hosts file: {0}'.format(hosts_path)}
     if not os.path.exists(file_path):
         return {'result': 'failed', 'message': 'Cannot read import file: {0}'.format(file_path)}
     else:
         hosts = Hosts(path=hosts_path)
-        return hosts.import_file(import_file_path=file_path)
-
+        pre_count = len(hosts.entries)
+        import_file_output = hosts.import_file(import_file_path=file_path)
+        post_count = len(hosts.entries)
+        write_result = import_file_output.get('write_result')
+        message = 'New entries:\t{0}\nTotal entries:\t{1}\n'.format(
+            post_count - pre_count,
+            write_result.get('total_written')
+        )
+    return {'result': import_file_output.get('result'),
+            'message': message}
 
 def import_from_url(hosts_path=None, url=None):
-    hosts = Hosts(path=hosts_path)
-    return hosts.import_url(url=url)
+    if hosts_path and not os.path.exists(hosts_path):
+        return {'result': 'failed', 'message': 'Cannot read hosts file: {0}'.format(hosts_path)}
+    else:
+        hosts = Hosts(path=hosts_path)
+        pre_count = len(hosts.entries)
+        import_url_output = hosts.import_url(url=url)
+        post_count = len(hosts.entries)
+        write_result = import_url_output.get('write_result')
+        message = 'New entries:\t{0}\nTotal entries:\t{1}\n'.format(
+            post_count - pre_count,
+            write_result.get('total_written')
+        )
+    return {'result': import_url_output.get('result'),
+            'message': message}
 
 
 def remove(address_to_remove=None, names_to_remove=None, remove_from_path=None):
@@ -191,7 +210,7 @@ if __name__ == '__main__':
             result = add(entry_line=new_entry, hosts_path=path, force_add=force)
             output_message(result)
         if input_file:
-            result = import_from_file(file_path=input_file)
+            result = import_from_file(hosts_path=path, file_path=input_file)
             output_message(result)
         if input_url:
             result = import_from_url(hosts_path=path, url=input_url)
