@@ -53,6 +53,10 @@ def backup_hosts(source=None, extension=None):
 
 
 def output_message(message=None):
+    """
+    :param message: A dict containing the result and a user notification message
+    :return: Exit with 0 or 1, or True if this is not the final output
+    """
     res = message.get('result')
     if res == 'success':
         print (Fore.GREEN + message.get('message'))
@@ -144,7 +148,7 @@ def remove(address_to_remove=None, names_to_remove=None, remove_from_path=None):
     remove_result = None
     write_result = False
     if address_to_remove or names_to_remove:
-        remove_result = hosts.remove_matching(address=address_to_remove, names=names_to_remove)
+        remove_result = hosts.remove_all_matching(address=address_to_remove, name=names_to_remove)
         write_result = hosts.write()
 
     if not write_result:
