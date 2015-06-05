@@ -65,7 +65,7 @@ def output_message(message=None):
         print (Fore.RED + message.get('message'))
         sys.exit(1)
     elif res == 'continue':
-        print message.get('message')
+        print (message.get('message'))
         return True
 
 
