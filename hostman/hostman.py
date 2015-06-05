@@ -203,6 +203,8 @@ if __name__ == '__main__':
 
     if backup:
         result = backup_hosts(source=path)
+        if result.get('result') == 'success':
+            result['result'] = 'continue'
         output_message(result)
 
     if arguments.get('add'):
