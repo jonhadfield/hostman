@@ -26,7 +26,7 @@ Options:
   -v --verbose                 print verbose output
 """
 from docopt import docopt
-from hosts import Hosts, utils, HostsEntry
+from python_hosts import Hosts, utils, HostsEntry
 import sys
 import os
 import datetime
