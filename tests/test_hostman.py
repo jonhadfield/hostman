@@ -2,10 +2,20 @@
 import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'hostman')))
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..', 'hosts')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..', 'python-hosts')))
 import hostman
 import pytest
 from exceptions import SystemExit
+
+def test_output_message_with_failed():
+    with pytest.raises(SystemExit) as cm:
+        hostman.output_message({'result': 'failed', 'message': 'test failed'})
+    assert cm.value.code == 1
+
+def test_output_message_with_success():
+    with pytest.raises(SystemExit) as cm:
+        hostman.output_message({'result': 'success', 'message': 'test success'})
+    assert cm.value.code == 0
 
 
 def test_add_add_duplicate_ipv4_host_with_force(tmpdir):
@@ -117,6 +127,8 @@ def test_backup_hosts_file_fails_with_invalid_source(tmpdir):
 
 def test_output_message_with_continue():
     assert hostman.output_message({'result': 'continue', 'message': 'test continue'})
+
+
 
 
 def test_import_hosts_from_file(tmpdir):
