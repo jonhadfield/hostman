@@ -50,7 +50,7 @@ setup(
     url='http://github.com/jonhadfield/hostman/',
     author='Jon Hadfield',
     author_email='jon.hadfield@lessknown.co.uk',
-    install_requires=['docopt','colorama'],
+    install_requires=['docopt','colorama','python-hosts'],
     description='Manage a hosts file',
     long_description=long_description,
     packages=[
