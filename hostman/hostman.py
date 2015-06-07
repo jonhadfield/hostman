@@ -26,7 +26,8 @@ Options:
   -v --verbose                 print verbose output
 """
 from docopt import docopt
-from python_hosts import Hosts, utils, HostsEntry
+import python_hosts.hosts as phosts
+import python_hosts.utils as putils
 import sys
 import os
 import datetime
@@ -77,14 +78,14 @@ def add(entry_line=None, hosts_path=None, force_add=False):
     :param force_add: Replace matching any matching entries with new entry
     :return:
     """
-    hosts_entry = HostsEntry.str_to_hostentry(entry_line)
+    hosts_entry = phosts.HostsEntry.str_to_hostentry(entry_line)
     if not hosts_entry:
         output_message({'result': 'failed', 'message': '"{0}": is not a valid entry.'.format(entry_line)})
 
     duplicate_entry = False
     entry_to_add = False
 
-    hosts = Hosts(hosts_path)
+    hosts = phosts.Hosts(hosts_path)
     add_result = hosts.add(entries=[hosts_entry], force=force_add)
     if add_result.get('replaced_count'):
         hosts.write()
@@ -110,7 +111,7 @@ def import_from_file(hosts_path=None, file_path=None):
     if not os.path.exists(file_path):
         return {'result': 'failed', 'message': 'Cannot read import file: {0}'.format(file_path)}
     else:
-        hosts = Hosts(path=hosts_path)
+        hosts = phosts.Hosts(path=hosts_path)
         pre_count = len(hosts.entries)
         import_file_output = hosts.import_file(import_file_path=file_path)
         post_count = len(hosts.entries)
@@ -127,7 +128,7 @@ def import_from_url(hosts_path=None, url=None):
     if hosts_path and not os.path.exists(hosts_path):
         return {'result': 'failed', 'message': 'Cannot read hosts file: {0}'.format(hosts_path)}
     else:
-        hosts = Hosts(path=hosts_path)
+        hosts = phosts.Hosts(path=hosts_path)
         pre_count = len(hosts.entries)
         import_url_output = hosts.import_url(url=url)
         post_count = len(hosts.entries)
@@ -144,7 +145,7 @@ def remove(address_to_remove=None, names_to_remove=None, remove_from_path=None):
     """
     Remove entries matching address and/or names
     """
-    hosts = Hosts(path=remove_from_path)
+    hosts = phosts.Hosts(path=remove_from_path)
     remove_result = None
     write_result = False
     if address_to_remove or names_to_remove:
@@ -193,7 +194,7 @@ if __name__ == '__main__':
         else:
             path = '/etc/hosts'
 
-    if not utils.is_readable(path):
+    if not putils.is_readable(path):
         output_message({'result': 'failed',
                         'message': 'Unable to read path: {0}.'.format(path)})
 
@@ -209,7 +210,7 @@ if __name__ == '__main__':
 
     if arguments.get('add'):
         final_message = None
-        if not utils.is_writeable(path):
+        if not putils.is_writeable(path):
             output_message({'result': 'failed',
                             'message': 'Unable to write to: {0}'.format(path)})
         if new_entry:
