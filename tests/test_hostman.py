@@ -3,7 +3,6 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..', 'python-hosts')))
-print sys.path
 from hostman import output_message, import_from_file, import_from_url, add, backup_hosts, strip_entry_value, remove
 import pytest
 from exceptions import SystemExit
