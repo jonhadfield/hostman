@@ -5,12 +5,13 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..', 'python-hosts')))
 from hostman import output_message, import_from_file, import_from_url, add, backup_hosts, strip_entry_value, remove
 import pytest
-from exceptions import SystemExit
+
 
 def test_output_message_with_failed():
     with pytest.raises(SystemExit) as cm:
         output_message({'result': 'failed', 'message': 'test failed'})
     assert cm.value.code == 1
+
 
 def test_output_message_with_success():
     with pytest.raises(SystemExit) as cm:
@@ -39,7 +40,7 @@ def test_import_hosts_with_invalid_hosts_path(tmpdir):
     import_file = tmpdir.mkdir("tmp").join("in")
     import_file.write("8.8.8.8\tgoogledns\n")
     result = import_from_file(hosts_path='invalid',
-                                      file_path=import_file.strpath)
+                              file_path=import_file.strpath)
     assert result.get('message').startswith('Cannot read hosts file:')
 
 
@@ -52,7 +53,7 @@ def test_import_hosts_with_invalid_import_file_path(tmpdir):
     import_file = tmpdir.mkdir("tmp").join("in")
     import_file.write("8.8.8.8\tgoogledns\n")
     result = import_from_file(hosts_path=hosts_file.strpath,
-                                      file_path='invalid')
+                              file_path='invalid')
     assert result.get('message').startswith('Cannot read import file:')
 
 
