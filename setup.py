@@ -56,6 +56,7 @@ setup(
     packages=[
         'hostman',
     ],
+    scripts=['bin/hostman'],
     package_dir={'hostman': 'hostman'},
     include_package_data=True,
     platforms='any',
