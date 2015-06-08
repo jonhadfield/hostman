@@ -102,10 +102,10 @@ def test_backup_hosts_file_fails_with_invalid_source(tmpdir):
     assert 'Cannot create backup file:' in output.get('message')
 
 
-# def test_failure_with_invalid_host_entry():
-#    with pytest.raises(SystemExit) as cm:
-#        hostman.add(entry_line='256.255.255.255 badaddr.com')
-#    assert cm.value.code == 1
+def test_failure_with_invalid_host_entry():
+    with pytest.raises(SystemExit) as cm:
+        add(entry_line='256.255.255.255 badaddr.com')
+    assert cm.value.code == 1
 
 
 # def test_output_message_with_failure():
