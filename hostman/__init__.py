@@ -172,6 +172,7 @@ def strip_entry_value(entry_value):
     if isinstance(entry_value, str):
         return entry_value.strip()
 
+
 def real_main():
     arguments = docopt(__doc__, version='0.1.0')
     entry = arguments.get('ENTRY')
@@ -204,7 +205,6 @@ def real_main():
         output_message(result)
 
     if arguments.get('add'):
-        final_message = None
         if not is_writeable(path):
             output_message({'result': 'failed',
                             'message': 'Unable to write to: {0}'.format(path)})
@@ -221,7 +221,6 @@ def real_main():
         if arguments.get('remove'):
             result = remove(address_to_remove=address, names_to_remove=names, remove_from_path=path)
             output_message(result)
-
 
 if __name__ == '__main__':
     real_main()
