@@ -2,9 +2,8 @@
 
 import os
 import sys
-
-from setuptools import setup, find_packages
-from setuptools.command.test import test as TestCommand
+from setuptools import setup
+from setuptools.command.test import test as testcommand
 
 version = "0.1.0"
 
@@ -18,7 +17,7 @@ if sys.argv[-1] == 'tag':
     os.system("git push --tags")
     sys.exit()
 
-readme = open('README.rst').read()
+readme = open('README.md').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 long_description = readme + '\n\n' + history
@@ -27,15 +26,22 @@ if sys.argv[-1] == 'readme':
     print(long_description)
     sys.exit()
 
-class PyTest(TestCommand):
+
+class PyTest(testcommand):
     user_options = [('pytest-args=', 'a', "Arguments to pass to py.test")]
 
+    def __init__(self):
+        super(testcommand, self).__init__()
+        self.pytest_args = None
+        self.test_args = None
+        self.test_suite = None
+
     def initialize_options(self):
-        TestCommand.initialize_options(self)
+        testcommand.initialize_options(self)
         self.pytest_args = []
 
     def finalize_options(self):
-        TestCommand.finalize_options(self)
+        testcommand.finalize_options(self)
         self.test_args = []
         self.test_suite = True
 
@@ -47,25 +53,23 @@ class PyTest(TestCommand):
 setup(
     name='hostman',
     version=version,
-    url='http://github.com/jonhadfield/hostman/',
     author='Jon Hadfield',
     author_email='jon.hadfield@lessknown.co.uk',
+    url='http://github.com/jonhadfield/hostman',
     install_requires=['docopt>=0.6.2', 'colorama>=0.3.3', 'python-hosts>=0.2.10'],
-    description='Manage a hosts file',
+    description='A CLI to manage a hosts file',
     long_description=long_description,
-    packages=[
-        'hostman',
-    ],
+    packages=['hostman'],
+    platforms='any',
+    license='MIT',
     scripts=['bin/hostman'],
     package_dir={'hostman': 'hostman'},
     include_package_data=True,
-    platforms='any',
-    license='MIT',
     classifiers=[
         'Programming Language :: Python',
         'Development Status :: 2 - Pre-Alpha',
         'Natural Language :: English',
-        'Environment :: console',
+        'Environment :: Console',
         'Intended Audience :: System Administrators',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
