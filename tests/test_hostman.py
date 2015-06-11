@@ -13,6 +13,12 @@ def test_output_message_with_failed():
     assert cm.value.code == 1
 
 
+def test_output_message_with_failed():
+    with pytest.raises(SystemExit) as cm:
+        output_message({'result': 'failed', 'message': 'test failed'})
+    assert cm.value.code == 1
+
+
 def test_output_message_with_success():
     with pytest.raises(SystemExit) as cm:
         output_message({'result': 'success', 'message': 'test success'})
