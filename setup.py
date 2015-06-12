@@ -3,7 +3,7 @@
 import os
 import sys
 from setuptools import setup
-from setuptools.command.test import test as testcommand
+from setuptools.command.test import test as TestCommand
 
 version = "0.1.0"
 
@@ -26,22 +26,15 @@ if sys.argv[-1] == 'readme':
     print(long_description)
     sys.exit()
 
-
-class PyTest(testcommand):
+class PyTest(TestCommand):
     user_options = [('pytest-args=', 'a', "Arguments to pass to py.test")]
 
-    def __init__(self):
-        super(testcommand, self).__init__()
-        self.pytest_args = None
-        self.test_args = None
-        self.test_suite = None
-
     def initialize_options(self):
-        testcommand.initialize_options(self)
+        TestCommand.initialize_options(self)
         self.pytest_args = []
 
     def finalize_options(self):
-        testcommand.finalize_options(self)
+        TestCommand.finalize_options(self)
         self.test_args = []
         self.test_suite = True
 
@@ -56,7 +49,7 @@ setup(
     author='Jon Hadfield',
     author_email='jon.hadfield@lessknown.co.uk',
     url='http://github.com/jonhadfield/hostman',
-    install_requires=['docopt>=0.6.2', 'colorama>=0.3.3', 'python-hosts>=0.2.10'],
+    install_requires=['docopt==0.6.2', 'colorama==0.3.3', 'python-hosts==0.2.10'],
     description='A CLI to manage a hosts file',
     long_description=long_description,
     packages=['hostman'],
@@ -79,7 +72,6 @@ setup(
     keywords=(
         'hosts, Python, network'
     ),
-    cmdclass = {'test': PyTest},
-    test_suite='tests',
-    tests_require=['pytest', 'docopt']
+    tests_require=['pytest'],
+    cmdclass={'test': PyTest},
 )
