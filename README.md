@@ -12,11 +12,11 @@ Installation
 
 Usage
 ------------
-  hostman add [-fqbcvq] [--force] [--path=PATH]
-              ( [ENTRY ...] | [--input-file=FILE] | [--input-url=URL] )
-  hostman remove [-qbcvq] ([--address=<address>] [--names=<names>]) [--path=PATH]
+    hostman add [-fqbcvq] [--force] [--path=PATH]
+                ( [ENTRY ...] | [--input-file=FILE] | [--input-url=URL] )
+    hostman remove [-qbcvq] ([--address=<address>] [--names=<names>]) [--path=PATH]
                  [--input-file=FILE] [--input-url=URL]
-  hostman --version
+    hostman --version
 
 Options
 ------------
