@@ -187,7 +187,7 @@ def real_main():
     input_file = arguments.get('--input-file')
     input_url = arguments.get('--input-url')
     result = None
-    
+
     if not path:
         if sys.platform.startswith('win'):
             path = r'c:\windows\system32\drivers\etc\hosts'
