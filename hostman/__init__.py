@@ -52,20 +52,22 @@ def backup_hosts(source=None, extension=None):
         return {'result': 'failed', 'message': 'Cannot create backup file: {0}'.format(dest)}
 
 
-def output_message(message=None):
+def output_message(message=None, quiet=False):
     """
     :param message: A dict containing the result and a user notification message
     :return: Exit with 0 or 1, or True if this is not the final output
     """
     res = message.get('result')
     if res == 'success':
-        print (Fore.GREEN + message.get('message'))
+        if not quiet:
+            print (Fore.GREEN + message.get('message'))
         sys.exit(0)
     elif res == 'failed':
         print (Fore.RED + message.get('message'))
         sys.exit(1)
     elif res == 'continue':
-        print (message.get('message'))
+        if not quiet:
+            print (message.get('message'))
         return True
 
 
@@ -176,6 +178,7 @@ def strip_entry_value(entry_value):
 def real_main():
     arguments = docopt(__doc__, version='0.1.0')
     entry = arguments.get('ENTRY')
+    quiet = arguments.get('--quiet')
     path = arguments.get('--path')
     force = arguments.get('--force')
     backup = arguments.get('--backup')
@@ -183,7 +186,8 @@ def real_main():
     names = arguments.get('--names')
     input_file = arguments.get('--input-file')
     input_url = arguments.get('--input-url')
-
+    result = None
+    
     if not path:
         if sys.platform.startswith('win'):
             path = r'c:\windows\system32\drivers\etc\hosts'
@@ -202,25 +206,23 @@ def real_main():
         result = backup_hosts(source=path)
         if result.get('result') == 'success':
             result['result'] = 'continue'
-        output_message(result)
+        output_message(result, quiet=quiet)
 
     if arguments.get('add'):
         if not is_writeable(path):
-            output_message({'result': 'failed',
-                            'message': 'Unable to write to: {0}'.format(path)})
+            result = {'result': 'failed',
+                      'message': 'Unable to write to: {0}'.format(path)}
         if new_entry:
             result = add(entry_line=new_entry, hosts_path=path, force_add=force)
-            output_message(result)
         if input_file:
             result = import_from_file(hosts_path=path, file_path=input_file)
-            output_message(result)
         if input_url:
             result = import_from_url(hosts_path=path, url=input_url)
-            output_message(result)
     else:
         if arguments.get('remove'):
             result = remove(address_to_remove=address, names_to_remove=names, remove_from_path=path)
-            output_message(result)
+    if result:
+        output_message(result, quiet=quiet)
 
 if __name__ == '__main__':
     real_main()
