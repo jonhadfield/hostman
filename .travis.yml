@@ -10,6 +10,6 @@ python:
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install: sudo pip install -r requirements.txt
-
+sudo: required
 # command to run tests, e.g. python setup.py test
 script: python setup.py test
