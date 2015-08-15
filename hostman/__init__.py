@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """Hostman.
 
 Usage:
@@ -25,6 +24,7 @@ Options:
                                to exclude from operation [default: 127.0.0.1]
   -v --verbose                 print verbose output
 """
+
 from docopt import docopt
 from python_hosts import Hosts, HostsEntry
 from .utils import is_writeable, is_readable

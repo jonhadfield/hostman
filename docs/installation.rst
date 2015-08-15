@@ -1,12 +1,12 @@
-============
 Installation
 ============
+*Using pip package manager*
 
-At the command line::
+    $ pip install python-hosts
 
-    $ easy_install hostman
+*From source*
 
-Or, if you have virtualenvwrapper installed::
-
-    $ mkvirtualenv hostman
-    $ pip install hostman
+|    $ git clone https://github.com/jonhadfield/python-hosts
+|    $ cd python-hosts
+|    $ python setup.py install
+|

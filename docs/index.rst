@@ -1,22 +1,26 @@
-.. hostman documentation master file, created by
-   sphinx-quickstart on Tue Jul  9 22:26:36 2013.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+=======
+Hostman
+=======
 
-Welcome to hostman's documentation!
-======================================
+A python application to manage a hosts file.
 
-Contents:
+Getting started
+---------------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
-   readme
    installation
    usage
-   contributing
-   authors
-   history
+
+Code
+----
+
+.. toctree::
+   :maxdepth: 3
+
+   hostman
+
 
 Indices and tables
 ==================

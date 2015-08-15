@@ -2,8 +2,7 @@ import os
 
 
 def is_readable(path=None):
-    """
-    Test if the supplied filesystem path can be read
+    """ Test if the supplied filesystem path can be read
     :param path: A filesystem path
     :return: True if the path is a file that can be read. Otherwise, False
     """
