@@ -27,7 +27,7 @@ Options:
 """
 from docopt import docopt
 from python_hosts import Hosts, HostsEntry
-from hostman.utils import is_writeable, is_readable
+from utils import is_writeable, is_readable
 import sys
 import os
 import datetime
