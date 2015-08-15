@@ -49,7 +49,7 @@ setup(
     author='Jon Hadfield',
     author_email='jon.hadfield@lessknown.co.uk',
     url='http://github.com/jonhadfield/hostman',
-    install_requires=['docopt==0.6.2', 'colorama==0.3.3', 'python-hosts==0.2.10'],
+    install_requires=['docopt==0.6.2', 'colorama==0.3.3', 'python-hosts==0.3.0'],
     description='A CLI to manage a hosts file',
     long_description=long_description,
     packages=['hostman'],
