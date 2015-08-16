@@ -1,23 +1,23 @@
 Usage
 =====
-**Create an instance of a hosts file**::
+**Options**::
 
- from python_hosts import Hosts, HostsEntry
- my_hosts = Hosts()
+ hostman add [-fqbvq] [--force] [--path=PATH]
+             ( [ENTRY ...] | [--input-file=FILE] | [--input-url=URL] )
+ hostman remove [-qbvq] ([--address=<address>] [--names=<names>]) [--path=PATH]
+                [--input-file=FILE] [--input-url=URL]
+ hostman --version
 
-**Add an entry**::
+Note: if a path is not supplied, the application will attempt to detect the
+standard host file path based on the detected operating system being used.
 
- new_entry = HostsEntry(entry_type='ipv4', address='1.2.3.4', names=['example.com', 'example'])
- my_hosts.add([new_entry])
+Examples
+========
+**Add an entry to the default hosts file**::
 
-**Remove an entry/entries matching an address**::
+ $ sudo hostman add 5.6.7.8 example.com example.net
 
- my_hosts.remove_all_matching(address='1.2.3.4')
+**Remove all entries matching a specific address from the default hosts file**::
 
-**Remove an entry/entries matching an address**::
+ $ sudo hostman remove --address=5.6.7.8 
 
- my_hosts.remove_all_matching(names='example.com')
-
-**Write entries**::
-
- my_hosts.write()
