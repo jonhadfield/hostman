@@ -25,6 +25,7 @@ Options:
   -v --verbose                 print verbose output
 """
 
+from __future__ import print_function
 from docopt import docopt
 from python_hosts import Hosts, HostsEntry
 from .utils import is_writeable, is_readable
@@ -37,6 +38,12 @@ init(autoreset=True)
 
 
 def backup_hosts(source=None, extension=None):
+    """Backup a hosts file
+
+    :param source: Path to the hosts file
+    :param extension: The extension to add to the backup file
+    :return: A dict containing the result and user message to output
+    """
     if not extension:
         now = datetime.datetime.now()
         ext = now.strftime('%Y%m%d%H%M%S')
@@ -54,35 +61,37 @@ def backup_hosts(source=None, extension=None):
 
 
 def output_message(message=None, quiet=False):
-    """
+    """User friendly result of action
+
     :param message: A dict containing the result and a user notification message
     :return: Exit with 0 or 1, or True if this is not the final output
     """
     res = message.get('result')
     if res == 'success':
         if not quiet:
-            print (Fore.GREEN + message.get('message'))
+            print(Fore.GREEN + message.get('message'))
         sys.exit(0)
     elif res == 'failed':
-        print (Fore.RED + message.get('message'))
+        print(Fore.RED + message.get('message'))
         sys.exit(1)
     elif res == 'continue':
         if not quiet:
-            print (message.get('message'))
+            print(message.get('message'))
         return True
 
 
 def add(entry_line=None, hosts_path=None, force_add=False):
-    """
-    Add the specified entry
+    """Add the specified entry
+
     :param entry_line: The entry to add
     :param hosts_path: The path of the hosts file
     :param force_add: Replace matching any matching entries with new entry
-    :return:
+    :return: A dict containing the result and user message to output
     """
     hosts_entry = HostsEntry.str_to_hostentry(entry_line)
     if not hosts_entry:
-        output_message({'result': 'failed', 'message': '"{0}": is not a valid entry.'.format(entry_line)})
+        output_message({'result': 'failed',
+                        'message': '"{0}": is not a valid entry.'.format(entry_line)})
 
     duplicate_entry = False
     entry_to_add = False
@@ -108,6 +117,12 @@ def add(entry_line=None, hosts_path=None, force_add=False):
 
 
 def import_from_file(hosts_path=None, file_path=None):
+    """Import entries from a text file
+
+    :param hosts_path: Path to the hosts file to update
+    :param file_path: Path to the file containing the hosts entries to import
+    :return: A dict containing the result and user message to output
+    """
     if hosts_path and not os.path.exists(hosts_path):
         return {'result': 'failed', 'message': 'Cannot read hosts file: {0}'.format(hosts_path)}
     if not os.path.exists(file_path):
@@ -127,6 +142,12 @@ def import_from_file(hosts_path=None, file_path=None):
 
 
 def import_from_url(hosts_path=None, url=None):
+    """Import entries from a text file found on a specific URL
+
+    :param hosts_path: Path to the hosts file to update
+    :param url: URL of the text file containing the hosts entries to import
+    :return: A dict containing the result and user message to output
+    """
     hosts = Hosts(path=hosts_path)
     pre_count = len(hosts.entries)
     import_url_output = hosts.import_url(url=url)
@@ -141,8 +162,12 @@ def import_from_url(hosts_path=None, url=None):
 
 
 def remove(address_to_remove=None, names_to_remove=None, remove_from_path=None):
-    """
-    Remove entries matching address and/or names
+    """Remove entries from a hosts file
+
+    :param address_to_remove: An ipv4 or ipv6 address to remove
+    :param names_to_remove: A list of names to remove
+    :param remove_from_path: The path of the hosts file to remove entries from
+    :return: A dict containing the result and user message to output
     """
     hosts = Hosts(path=remove_from_path)
     remove_result = None
@@ -152,18 +177,20 @@ def remove(address_to_remove=None, names_to_remove=None, remove_from_path=None):
         write_result = hosts.write()
 
     if not write_result:
-        return {'result': 'failed', 'message': 'Unable to write to path: {0}'.format(hosts.hosts_path)}
+        return {'result': 'failed',
+                'message': 'Unable to write to path: {0}'.format(hosts.hosts_path)}
     if remove_result:
         str_entry = "entry"
         if remove_result > 1:
             str_entry = 'entries'
         return {'result': 'success', 'message': 'Removed {0} {1}.'.format(remove_result, str_entry)}
     else:
-        return {'result': 'failed', 'message': 'No matching entries.'.format(remove_result)}
+        return {'result': 'failed', 'message': 'No matching entries.'}
 
 
 def strip_entry_value(entry_value):
-    """
+    """Strip white space from a string or list of strings
+
     :param entry_value: value to strip spaces from
     :return: value minus the leading and trailing spaces
     """
@@ -177,6 +204,10 @@ def strip_entry_value(entry_value):
 
 
 def real_main():
+    """ The function called from the script
+
+    :return: None
+    """
     arguments = docopt(__doc__, version='0.1.0')
     entry = arguments.get('ENTRY')
     quiet = arguments.get('--quiet')
