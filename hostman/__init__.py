@@ -170,22 +170,21 @@ def remove(address_to_remove=None, names_to_remove=None, remove_from_path=None):
     :return: A dict containing the result and user message to output
     """
     hosts = Hosts(path=remove_from_path)
-    remove_result = None
-    write_result = False
     if address_to_remove or names_to_remove:
-        remove_result = hosts.remove_all_matching(address=address_to_remove, name=names_to_remove)
-        write_result = hosts.write()
-
-    if not write_result:
-        return {'result': 'failed',
-                'message': 'Unable to write to path: {0}'.format(hosts.hosts_path)}
-    if remove_result:
-        str_entry = "entry"
-        if remove_result > 1:
-            str_entry = 'entries'
-        return {'result': 'success', 'message': 'Removed {0} {1}.'.format(remove_result, str_entry)}
-    else:
-        return {'result': 'failed', 'message': 'No matching entries.'}
+        num_before = hosts.count()
+        hosts.remove_all_matching(address=address_to_remove, name=names_to_remove)
+        hosts.write()
+        difference = num_before - hosts.count()
+        if difference:
+            if difference > 1:
+                str_entry = 'entries'
+            else:
+                str_entry = 'entry'
+            return {'result': 'success',
+                    'message': 'Removed {0} {1}'.format(difference, str_entry)}
+        else:
+            return {'result': 'failed',
+                    'message': 'No matching entries found'}
 
 
 def strip_entry_value(entry_value):
