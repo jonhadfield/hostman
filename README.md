@@ -1,6 +1,6 @@
 hostman
 ========
-[![Build Status](https://api.travis-ci.org/jonhadfield/hostman.svg?branch=devel)](https://travis-ci.org/jonhadfield/hostman)
+[![Build Status](https://api.travis-ci.org/jonhadfield/hostman.svg?branch=devel)](https://travis-ci.org/jonhadfield/hostman) [![Coverage Status](https://coveralls.io/repos/jonhadfield/hostman/badge.svg?branch=devel&service=github)](https://coveralls.io/github/jonhadfield/hostman?branch=devel)
 
 A simple command line tool for managing your hosts file.
 Add, remove or import entries from file or URLs.
