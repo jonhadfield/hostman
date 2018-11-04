@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..', 'python-hosts')))
 from hostman import output_message, import_from_file, import_from_url, add, backup_hosts, strip_entry_value, remove
@@ -154,7 +155,7 @@ def test_import_hosts_from_url(tmpdir):
     """
     hosts_file = tmpdir.mkdir("etc").join("hosts")
     hosts_file.write("127.0.0.1\tlocalhost\n")
-    import_url = "https://dl.dropboxusercontent.com/u/167103/hosts"
+    import_url = "https://raw.githubusercontent.com/jonhadfield/python-hosts/devel/test_files/hosts"
     assert import_from_url(hosts_path=hosts_file.strpath, url=import_url)
 
 
