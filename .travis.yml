@@ -42,7 +42,7 @@ matrix:
     language: objective-c
     env: PYENV_VERSION=3.6.5
 before_install:
-    - pip install pytest pytest-cov coveralls python-hosts
+    - pip install pytest pytest-cov coveralls python-hosts colorama
 script:
     - py.test --cov-report term-missing --cov hostman
 after_success:
