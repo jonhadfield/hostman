@@ -2,6 +2,7 @@
 
 import os
 import sys
+
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
 
@@ -26,6 +27,7 @@ if sys.argv[-1] == 'readme':
     print(long_description)
     sys.exit()
 
+
 class PyTest(TestCommand):
     user_options = [('pytest-args=', 'a', "Arguments to pass to py.test")]
 
@@ -43,19 +45,22 @@ class PyTest(TestCommand):
         errno = pytest.main(self.pytest_args)
         sys.exit(errno)
 
+
 setup(
     name='hostman',
     version=version,
     author='Jon Hadfield',
     author_email='jon.hadfield@lessknown.co.uk',
     url='http://github.com/jonhadfield/hostman',
-    install_requires=['docopt==0.6.2', 'colorama==0.3.3', 'python-hosts>=0.3.2'],
+    install_requires=['docopt>=0.6.2', 'colorama>=0.3.3', 'python-hosts>=0.3.2'],
     description='A CLI to manage a hosts file',
     long_description=long_description,
     packages=['hostman'],
     platforms='any',
     license='MIT',
-    scripts=['bin/hostman'],
+    entry_points={
+        'console_scripts': ['hostman=hostman.__init__:real_main'],
+    },
     package_dir={'hostman': 'hostman'},
     include_package_data=True,
     classifiers=[
