@@ -35,6 +35,7 @@ import datetime
 import shutil
 from colorama import Fore, init
 init(autoreset=True)
+name="hostman"
 
 
 def backup_hosts(source=None, extension=None):
@@ -207,7 +208,7 @@ def real_main():
 
     :return: None
     """
-    arguments = docopt(__doc__, version='0.1.0')
+    arguments = docopt(__doc__, version='0.1.1')
     entry = arguments.get('ENTRY')
     quiet = arguments.get('--quiet')
     path = arguments.get('--path')

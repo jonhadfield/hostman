@@ -6,7 +6,7 @@ import sys
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
 
-version = "0.1.0"
+version = "0.1.1"
 
 if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
@@ -47,7 +47,7 @@ class PyTest(TestCommand):
 
 
 setup(
-    name='hostman',
+    name='pyhostman',
     version=version,
     author='Jon Hadfield',
     author_email='jon.hadfield@lessknown.co.uk',

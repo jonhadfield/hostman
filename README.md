@@ -7,7 +7,7 @@ Add, remove or import entries from file or URLs.
 
 Installation
 ------------
-    pip install hostman
+    pip install pyhostman
 
 
 Usage
@@ -47,7 +47,7 @@ Importing a list of host entries by URL
 
 Requirements
 ------------
-Tested on python 2.6, 2.7 and 3.4
+Tested on python 2.7, 3.4, 3.5, 3.6, 3.7, pypy, and pypy3
 
 
 License
