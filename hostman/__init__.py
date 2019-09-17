@@ -27,15 +27,16 @@ Options:
 
 from __future__ import print_function
 from docopt import docopt
-from python_hosts import Hosts, HostsEntry
+from python_hosts.hosts import Hosts, HostsEntry
 from .utils import is_writeable, is_readable
 import sys
 import os
 import datetime
 import shutil
 from colorama import Fore, init
+
 init(autoreset=True)
-name="hostman"
+name = "hostman"
 
 
 def backup_hosts(source=None, extension=None):
@@ -255,6 +256,7 @@ def real_main():
             result = remove(address_to_remove=address, names_to_remove=names, remove_from_path=path)
     if result:
         output_message(result, quiet=quiet)
+
 
 if __name__ == '__main__':
     real_main()
