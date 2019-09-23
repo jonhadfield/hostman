@@ -18,16 +18,6 @@ if sys.argv[-1] == 'tag':
     os.system("git push --tags")
     sys.exit()
 
-readme = open('README.md').read()
-history = open('HISTORY.rst').read().replace('.. :changelog:', '')
-
-long_description = readme + '\n\n' + history
-
-if sys.argv[-1] == 'readme':
-    print(long_description)
-    sys.exit()
-
-
 class PyTest(TestCommand):
     user_options = [('pytest-args=', 'a', "Arguments to pass to py.test")]
 
@@ -54,7 +44,7 @@ setup(
     url='http://github.com/jonhadfield/hostman',
     install_requires=['docopt>=0.6.2', 'colorama>=0.3.3', 'python-hosts>=0.4.7'],
     description='A CLI to manage a hosts file',
-    long_description=long_description,
+    long_description='A CLI to manage a hosts file',
     packages=['hostman'],
     platforms='any',
     license='MIT',
