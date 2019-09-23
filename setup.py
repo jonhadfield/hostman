@@ -6,7 +6,7 @@ import sys
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
 
-version = "0.1.1"
+version = "0.1.3"
 
 if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
@@ -52,7 +52,7 @@ setup(
     author='Jon Hadfield',
     author_email='jon.hadfield@lessknown.co.uk',
     url='http://github.com/jonhadfield/hostman',
-    install_requires=['docopt>=0.6.2', 'colorama>=0.3.3', 'python-hosts>=0.3.2'],
+    install_requires=['docopt>=0.6.2', 'colorama>=0.3.3', 'python-hosts>=0.4.7'],
     description='A CLI to manage a hosts file',
     long_description=long_description,
     packages=['hostman'],
@@ -77,6 +77,6 @@ setup(
     keywords=(
         'hosts, Python, network'
     ),
-    tests_require=['pytest', 'python-hosts==0.3.2'],
+    tests_require=['pytest', 'python-hosts>=0.4.7'],
     cmdclass={'test': PyTest},
 )

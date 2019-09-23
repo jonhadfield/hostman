@@ -27,7 +27,7 @@ Options:
 
 from __future__ import print_function
 from docopt import docopt
-from python_hosts.hosts import Hosts, HostsEntry
+from python_hosts import Hosts, HostsEntry
 from .utils import is_writeable, is_readable
 import sys
 import os
@@ -209,7 +209,7 @@ def real_main():
 
     :return: None
     """
-    arguments = docopt(__doc__, version='0.1.1')
+    arguments = docopt(__doc__, version='0.1.3')
     entry = arguments.get('ENTRY')
     quiet = arguments.get('--quiet')
     path = arguments.get('--path')
