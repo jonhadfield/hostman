@@ -67,6 +67,6 @@ setup(
     keywords=(
         'hosts, Python, network'
     ),
-    tests_require=['pytest', 'python-hosts>=0.4.7'],
+    tests_require=['pytest==4.6.6', 'pytest-cov==2.8.1', 'python-hosts>=0.4.7'],
     cmdclass={'test': PyTest},
 )
