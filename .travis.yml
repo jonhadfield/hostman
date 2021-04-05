@@ -23,7 +23,11 @@ matrix:
     python: '3.7'
     env: BUILD_SDIST=true
   - os: linux
+    dist: xenial
     sudo: false
+    before_install:
+        - pip install cryptography==3.1.1
+        - pip install pytest==4.6.6 pytest-cov==2.8.1 coveralls python-hosts colorama coverage
     python: pypy
   - os: linux
     sudo: false
@@ -40,6 +44,6 @@ matrix:
 before_install:
     - pip install pytest==4.6.6 pytest-cov==2.8.1 coveralls python-hosts colorama coverage
 script:
-    - py.test --cov-report term-missing --cov hostman
+    - pytest --cov-report term-missing --cov hostman
 after_success:
     coveralls
